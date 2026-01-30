@@ -1,7 +1,74 @@
+@import url("https://fonts.googleapis.com/css2?family=Merienda:wght@300..900&display=swap");
 @import "tailwindcss";
 @plugin "daisyui";
 
-a.active {
-  color: gray;
-  text-decoration: underline;
+/* =========================
+   DESIGN TOKENS (LIGHT)
+========================= */
+@theme {
+  --font-family-sans: "Merienda", sans-serif;
+  
+  /* Map Tailwind colors to your variables */
+  --color-primary: var(--primary);
+  --color-accent: var(--accent);
+  --color-secondary: var(--secondary);
+}
+
+:root {
+  /* Brand - Synthesized Mint Palette */
+  --primary: #2E7F7F;      /* Deep Teal */
+  --accent: #FFBF5E;       /* Digital Amber */
+  --secondary: #CFFFEA;    /* Mint */
+
+  /* Text */
+  --text-main: #2D2D2D;    
+  --text-muted: #57606a; 
+
+  /* Backgrounds */
+  --bg-main: #ffffff;
+  --bg-soft: #F7F5EF;      /* Limestone */
+}
+
+/* =========================
+   DARK MODE
+========================= */
+[data-theme="dark"] {
+  --primary: #46A3A3;
+  --accent: #FFCF87;
+  --secondary: #1A3D3D;
+
+  --text-main: #F7F5EF;
+  --text-muted: #94a3b8;
+
+  --bg-main: #0F172A;
+  --bg-soft: #020617;
+}
+
+/* =========================
+   BASE STYLES
+========================= */
+@layer base {
+  body {
+    font-family: "Merienda", sans-serif;
+    background-color: var(--bg-soft);
+    color: var(--text-main);
+    @apply antialiased; /* Makes Merienda look smoother */
+  }
+
+  a.active {
+    color: var(--primary);
+    text-decoration: underline;
+  }
+}
+
+/* =========================
+   UTILITIES
+========================= */
+@layer utilities {
+  .bg-primary { background-color: var(--primary); }
+  .text-primary { color: var(--primary); }
+  .bg-accent { background-color: var(--accent); }
+  .bg-secondary { background-color: var(--secondary); }
+  .text-muted { color: var(--text-muted); }
+  .bg-main { background-color: var(--bg-main); }
 }
