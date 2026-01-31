@@ -13,7 +13,7 @@ const MentorList = () => {
           <input
             type="text"
             placeholder="Search by expertise (React, UX, Marketing...)"
-            className="input input-bordered w-full text-neutral font-sans"
+            className="input input-bordered w-full  font-sans"
           />
         </div>
       </div>

@@ -2,7 +2,7 @@ import React from 'react';
 
 const MentorCard = () => {
     return (
-        <div className="card bg-main shadow-sm border border-secondary/20 hover:shadow-xl transition-all font-sans">
+        <div className="card bg-main shadow-sm border border-primary/20 hover:shadow-xl transition-all font-sans">
     <div className="card-body p-6">
       <div className="flex items-start gap-4">
         <div className="avatar">
