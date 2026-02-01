@@ -1,7 +1,16 @@
-import React from "react";
+import React, { useContext } from "react";
 import { NavLink, Link } from "react-router";
+import Logo from "./Logo";
+import { AuthContext } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 const Navbar = () => {
+  const { user, signOutUser } = useContext(AuthContext);
+  const handleLogOut = () => {
+    signOutUser()
+      .then(() => toast.success("Logged out successfully"))
+      .catch((err) => console.log(err));
+  };
   const navLinks = (
     <>
       <NavLink
@@ -75,7 +84,6 @@ const Navbar = () => {
     <header className="bg-[var(--bg-main)] shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="navbar px-0">
-
           {/* LEFT */}
           <div className="navbar-start">
             <div className="dropdown">
@@ -104,12 +112,7 @@ const Navbar = () => {
               </ul>
             </div>
 
-            <Link
-              to="/"
-              className="text-xl font-bold text-[var(--text-main)]"
-            >
-              Mentor<span className="text-accent">Connect</span>
-            </Link>
+            <Logo />
           </div>
 
           {/* CENTER */}
@@ -119,12 +122,48 @@ const Navbar = () => {
 
           {/* RIGHT */}
           <div className="navbar-end">
-            <Link
-              to="/login"
-              className="bg-primary text-white px-6 py-2 rounded-full text-sm font-medium shadow hover:shadow-md transition"
-            >
-              Log In
-            </Link>
+            {user ? (
+              <div className="dropdown dropdown-end">
+                <div
+                  tabIndex={0}
+                  role="button"
+                  className="btn btn-ghost btn-circle avatar border-2 border-primary"
+                >
+                  <div className="w-10 rounded-full">
+                    <img
+                      alt="User profile"
+                      src={user?.photoURL || "https://i.pravatar.cc/150"}
+                    />
+                  </div>
+                </div>
+                <ul
+                  tabIndex={0}
+                  className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-xl bg-main rounded-box w-52 border border-secondary/20"
+                >
+                  <li className="p-2 font-bold text-primary">
+                    {user?.displayName || "User"}
+                  </li>
+                  <li>
+                    <Link to="/dashboard">My Dashboard</Link>
+                  </li>
+                  <li>
+                    <button
+                      onClick={handleLogOut}
+                      className="text-error font-bold"
+                    >
+                      Logout
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="btn btn-primary px-8 text-white rounded-full"
+              >
+                Log In
+              </Link>
+            )}
           </div>
         </div>
       </div>

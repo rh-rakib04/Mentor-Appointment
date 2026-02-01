@@ -5,6 +5,8 @@ import MentorList from "../pages/MentorList";
 import About from "../pages/Home/About";
 import Contact from "../pages/Contact";
 import BeMentor from "../pages/BeMentor";
+import Login from "../pages/Auth/Login";
+import Register from "../pages/Auth/Register";
 
 export const router = createBrowserRouter([
   {
@@ -19,6 +21,8 @@ export const router = createBrowserRouter([
       { path: "about", element: <About /> },
       { path: "contact", element: <Contact /> },
       { path: "be-a-mentor", element: <BeMentor /> },
+      { path: "login", element: <Login /> },
+      { path: "register", element: <Register /> },
     ],
   },
 ]);
