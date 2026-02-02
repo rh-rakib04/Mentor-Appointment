@@ -7,6 +7,7 @@ import Contact from "../pages/Contact";
 import BeMentor from "../pages/BeMentor";
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
+import PrivateRoute from "./PrivateRoute";
 
 export const router = createBrowserRouter([
   {
@@ -20,7 +21,14 @@ export const router = createBrowserRouter([
       },
       { path: "about", element: <About /> },
       { path: "contact", element: <Contact /> },
-      { path: "be-a-mentor", element: <BeMentor /> },
+      {
+        path: "be-a-mentor",
+        element: (
+          <PrivateRoute>
+            <BeMentor />
+          </PrivateRoute>
+        ),
+      },
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
     ],

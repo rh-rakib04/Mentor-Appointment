@@ -5,7 +5,7 @@ import { Mail, Phone, MapPin, Github, Linkedin, Twitter, Globe } from 'lucide-re
 
 const Footer = () => {
   return (
-    <footer className="bg-[#7e7e7e] text-gray-300  pt-16 pb-8">
+    <footer className="bg-accent-content/20 text-accent-content  pt-16 pb-8">
       <div className="container mx-auto px-6 lg:px-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           
@@ -17,13 +17,13 @@ const Footer = () => {
               Accelerate your career with 1:1 guidance from industry experts.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="p-2 bg-gray-800 rounded-lg hover:text-primary transition-colors">
+              <a href="#" className="p-2 bg-gray-400 rounded-lg hover:text-primary transition-colors">
                 <Linkedin size={18} />
               </a>
-              <a href="#" className="p-2 bg-gray-800 rounded-lg hover:text-primary transition-colors">
+              <a href="#" className="p-2 bg-gray-400 rounded-lg hover:text-primary transition-colors">
                 <Twitter size={18} />
               </a>
-              <a href="#" className="p-2 bg-gray-800 rounded-lg hover:text-primary transition-colors">
+              <a href="#" className="p-2 bg-gray-400 rounded-lg hover:text-primary transition-colors">
                 <Github size={18} />
               </a>
             </div>
@@ -31,7 +31,7 @@ const Footer = () => {
 
           {/* 2. Quick Links */}
           <div>
-            <h4 className="text-white font-merienda font-bold mb-6">Platform</h4>
+            <h4 className=" font-merienda font-bold mb-6">Platform</h4>
             <ul className="space-y-4 text-sm">
               <li><Link to="/mentors" className="hover:text-secondary transition-colors">Find a Mentor</Link></li>
               <li><Link to="/register" className="hover:text-secondary transition-colors">Become a Mentor</Link></li>
@@ -42,7 +42,7 @@ const Footer = () => {
 
           {/* 3. Contact Info */}
           <div>
-            <h4 className="text-white font-merienda font-bold mb-6">Contact</h4>
+            <h4 className=" font-merienda font-bold mb-6">Contact</h4>
             <ul className="space-y-4 text-sm">
               <li className="flex items-center gap-3">
                 <Mail size={16} className="text-secondary" />
@@ -61,7 +61,7 @@ const Footer = () => {
 
           {/* 4. Newsletter */}
           <div>
-            <h4 className="text-white font-merienda font-bold mb-6">Stay Updated</h4>
+            <h4 className=" font-merienda font-bold mb-6">Stay Updated</h4>
             <p className="text-xs text-gray-400 mb-4">Get the latest career tips and mentor highlights.</p>
             <div className="flex flex-col gap-2">
               <input 

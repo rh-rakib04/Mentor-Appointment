@@ -2,12 +2,14 @@ import React, { useContext } from "react";
 import { useForm } from "react-hook-form"; // Import this
 import Logo from "../../components/Logo";
 import GoogleSignIn from "./GoogleSignIn";
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { AuthContext } from "../../context/AuthContext";
 import toast from "react-hot-toast";
+import Swal from "sweetalert2";
 
 const Login = () => {
   const { signInUser, setLoading } = useContext(AuthContext);
+  const location = useLocation();
   const navigate = useNavigate();
 
   // 1. Initialize Hook Form
@@ -22,8 +24,11 @@ const Login = () => {
     setLoading(true);
     signInUser(data.email, data.password)
       .then((result) => {
-        toast.success("Welcome back to MentorConnect!");
-        navigate("/");
+        Swal.fire({
+          title: "Welcome back to MentorConnect!",
+          icon: "success",
+        });
+        navigate(location?.state || "/");
       })
       .catch((error) => {
         setLoading(false);
@@ -53,26 +58,38 @@ const Login = () => {
             <label className="label font-bold text-xs uppercase tracking-wider text-muted">
               Email
             </label>
+            <br />
             <input
               type="email"
               placeholder="your@email.com"
-              className="input input-bordered border-none focus:ring-2 focus:ring-primary"
+              className="input input-bordered text-white border-none focus:ring-2 focus:ring-primary"
               {...register("email", { required: "Email is required" })}
-            />
-            {errors.email && <span className="text-error text-xs mt-1">{errors.email.message}</span>}
+            />{" "}
+            <br />
+            {errors.email && (
+              <span className="text-error text-xs mt-1">
+                {errors.email.message}
+              </span>
+            )}
           </div>
 
           <div className="form-control">
             <label className="label font-bold text-xs uppercase tracking-wider text-muted">
               Password
             </label>
+            <br />
             <input
               type="password"
               placeholder="••••••••"
-              className="input input-bordered border-none focus:ring-2 focus:ring-primary"
+              className="input input-bordered text-white border-none focus:ring-2 focus:ring-primary"
               {...register("password", { required: "Password is required" })}
-            />
-            {errors.password && <span className="text-error text-xs mt-1">{errors.password.message}</span>}
+            />{" "}
+            <br />
+            {errors.password && (
+              <span className="text-error text-xs mt-1">
+                {errors.password.message}
+              </span>
+            )}
           </div>
 
           <button
