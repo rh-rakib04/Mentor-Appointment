@@ -1,7 +1,29 @@
 import React from "react";
 import MentorCard from "../components/cards/MentorCard";
+import { useQuery } from "@tanstack/react-query";
+import useAxios from "../hooks/useAxios";
+import Loading from "../components/Loading";
 
 const MentorList = () => {
+  const axios = useAxios();
+  const {
+    data: mentors = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["mentors"],
+    queryFn: async () => {
+      const result = await axios.get("/mentors");
+      return result.data;
+    },
+  });
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (isError) {
+    return <p className="text-red-500">{error.message}</p>;
+  }
   return (
     <div className="bg-soft min-h-screen">
       {/* Search Header */}
@@ -20,8 +42,8 @@ const MentorList = () => {
 
       <div className="container mx-auto px-6 py-10 flex flex-col lg:flex-row gap-8 ">
         {/* Sidebar Filters */}
-        <aside className="w-full lg:w-64 space-y-6 ">
-          <div className="p-6 bg-main rounded-2xl shadow-sm border border-secondary/20">
+        <aside className="w-full lg:w-64 space-y-6  ">
+          <div className="p-6 sticky top-20 bg-main rounded-2xl shadow-sm border border-secondary/20">
             <h3 className="font-bold mb-4">Category</h3>
             <div className="space-y-2 text-sm">
               {["Tech", "Design", "Business"].map((cat) => (
@@ -42,12 +64,9 @@ const MentorList = () => {
 
         {/* Mentor Grid */}
         <div className="flex-1 grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-          <MentorCard />
-          <MentorCard />
-          <MentorCard />
-          <MentorCard />
-          <MentorCard />
-          <MentorCard />
+          {mentors.map((mentor) => (
+            <MentorCard key={mentor._id} mentor={mentor}></MentorCard>
+          ))}
         </div>
       </div>
     </div>

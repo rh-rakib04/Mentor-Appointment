@@ -1,12 +1,12 @@
 import axios from "axios";
-import React from "react";
 
-const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000",
-});
+const useAxios = () => {
+  const instance = axios.create({
+    baseURL: "http://localhost:5000",
+    withCredentials: true,
+  });
 
-const axios = () => {
-  return axiosInstance;
+  return instance;
 };
 
-export default axios;
+export default useAxios;
