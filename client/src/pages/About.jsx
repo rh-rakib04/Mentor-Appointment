@@ -7,7 +7,7 @@ const About = () => {
       <section className=" py-20 px-6">
         <div className="container mx-auto max-w-5xl text-center">
           <h1 className="text-4xl lg:text-6xl font-bold font-merienda text-primary mb-6">
-            Bridging the Gap Between <br /> Learning and Doing.
+            Bridging the Gap Between <br /> Learning and Doing
           </h1>
           <p className="text-lg lg:text-xl text-muted max-w-3xl mx-auto leading-relaxed font-light">
             MentorConnect was born out of a simple observation: the most
@@ -76,7 +76,7 @@ const About = () => {
             </p>
           </div>
           <div className="lg:w-1/2 grid grid-cols-2 gap-4">
-            <div className="bg-secondary/20 p-8 rounded-2xl h-48 flex items-end">
+            <div className="bg-accent p-8 rounded-2xl h-48 flex items-end">
               <span className="font-bold text-primary text-xl font-merienda">
                 Curated Experts
               </span>
@@ -137,7 +137,7 @@ const About = () => {
           <button className="btn bg-accent border-none text-neutral btn-lg px-10">
             Find a Mentor
           </button>
-          <button className="btn btn-outline btn-secondary btn-lg px-10 border-white text-white">
+          <button className="btn btn-outline btn-accent btn-lg px-10 border-white text-white">
             Become a Mentor
           </button>
         </div>

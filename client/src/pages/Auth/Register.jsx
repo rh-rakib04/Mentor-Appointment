@@ -6,10 +6,12 @@ import { Link, useNavigate } from "react-router";
 import useAuth from "../../hooks/useAuth";
 import useAxios from "../../hooks/useAxios";
 import Swal from "sweetalert2";
+import { getAuth } from "firebase/auth";
 
 const Register = () => {
-  const { createUser, setLoading } = useAuth();
+  const { createUser, setLoading, updateUserProfile } = useAuth();
   const navigate = useNavigate();
+  const auth = getAuth();
   const axios = useAxios();
   const {
     register,
@@ -21,19 +23,43 @@ const Register = () => {
     try {
       setLoading(true);
 
+      // 1. Create User
       const result = await createUser(data.email, data.password);
-      const user = result.user;
 
+      // 2. Upload to imgBB (with a fallback)
+      let photoURL = "";
+      try {
+        const profileImg = data.photo[0];
+        const formData = new FormData();
+        formData.append("image", profileImg);
+        const res = await axios.post(
+          `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_KEY}`,
+          formData,
+        );
+        photoURL = res.data.data.url;
+      } catch (imgErr) {
+        console.error("Image upload failed, using default.");
+        photoURL = "https://i.pravatar.cc/150";
+      }
+
+      // 3. Update Firebase Profile
+      await updateUserProfile({
+        displayName: data.name,
+        photoURL: photoURL,
+      });
+
+      // 4. Save to MongoDB with PRD-specific fields
+      const user = auth.currentUser;
       const userInfo = {
-        name: data.name,
         email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
         role: data.role,
-        uid: user.uid,
+        isApproved: data.role === "mentor" ? false : true, // Requirement
         createdAt: new Date(),
       };
 
       await axios.post("/users", userInfo);
-      console.log("UserInfo sending:", userInfo);
 
       Swal.fire({
         toast: true,
@@ -42,7 +68,7 @@ const Register = () => {
         showConfirmButton: false,
         icon: "success",
         title: "Registration Successful!",
-        text: `Welcome, ${data.name}!`,
+        text: `Welcome, ${user.displayName}!`, // Changed to user.displayName
       });
 
       navigate("/");
@@ -108,6 +134,18 @@ const Register = () => {
                 {errors.name.message}
               </span>
             )}
+          </div>
+          {/* Photo Field */}
+          <div className="form-control">
+            <label className="label font-bold text-xs uppercase tracking-wider text-muted">
+              Photo URL
+            </label>
+            <input
+              type="file"
+              placeholder="https://example.com/photo.jpg"
+              className={`input input-bordered w-full text-white border-none focus:ring-2 focus:ring-primary focus:outline-none ${errors.photo ? "ring-2 ring-error" : ""}`}
+              {...register("photo", { required: false })}
+            />
           </div>
 
           {/* Email Field */}

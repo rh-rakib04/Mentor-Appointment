@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
 import { NavLink, Link } from "react-router";
 import Logo from "./Logo";
-import { AuthContext } from "../context/AuthContext";
 import toast from "react-hot-toast";
+import useAuth from "../hooks/useAuth";
 
 const Navbar = () => {
-  const { user, signOutUser } = useContext(AuthContext);
+  const { user, signOutUser } = useAuth();
   const handleLogOut = () => {
     signOutUser()
       .then(() => toast.success("Logged out successfully"))
@@ -141,7 +141,7 @@ const Navbar = () => {
                   className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-xl bg-main rounded-box w-52 border border-secondary/20"
                 >
                   <li className="p-2 font-bold text-primary">
-                    {user?.displayName || "User"}
+                    {user?.name || "User"}
                   </li>
                   <li>
                     <Link to="/dashboard">My Dashboard</Link>
@@ -159,7 +159,7 @@ const Navbar = () => {
             ) : (
               <Link
                 to="/login"
-                className="btn btn-primary px-8 text-white rounded-full"
+                className="btn bg-accent border-none px-8 text-black rounded-full"
               >
                 Log In
               </Link>

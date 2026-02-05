@@ -34,6 +34,7 @@ async function connectDB() {
     const db = client.db("mentor-connect-DB");
     const usersCollection = db.collection("users");
     const mentorsCollection = db.collection("mentors");
+    const slotsCollection = db.collection("slots");
 
     // ---------> Users APIs
     app.post("/users", async (req, res) => {
@@ -63,6 +64,16 @@ async function connectDB() {
 
       res.send(users);
     });
+    app.get("/users/:email/role", async (req, res) => {
+      try {
+        const email = req.params.email;
+        const user = await usersCollection.findOne({ email });
+        res.send({ role: user?.role || "student" });
+      } catch (error) {
+        console.error("Error fetching user role:", error.message);
+        res.status(500).send({ message: "Failed to fetch user role" });
+      }
+    });
 
     // ---------> Mentors APIs
     app.get("/mentors", async (req, res) => {
@@ -76,6 +87,52 @@ async function connectDB() {
       });
       res.send(mentor);
     });
+    // ---------> Slots APIs
+    app.post("/slots", async (req, res) => {
+      const slot = req.body;
+
+      if (!slot.mentorId || !slot.date || !slot.startTime) {
+        return res.status(400).send({ message: "Missing slot data" });
+      }
+
+      const result = await slotsCollection.insertOne({
+        mentorId: slot.mentorId,
+        date: slot.date,
+        startTime: slot.startTime,
+        endTime: slot.endTime,
+        isBooked: false,
+      });
+
+      res.send(result);
+    });
+    app.get("/slots/:mentorId", async (req, res) => {
+      const mentorId = req.params.mentorId;
+
+      const slots = await slotsCollection
+        .find({
+          mentorId,
+          isBooked: false,
+        })
+        .toArray();
+
+      res.send(slots);
+    });
+    app.patch("/slots/book/:id", async (req, res) => {
+      const id = req.params.id;
+
+      const result = await slotsCollection.updateOne(
+        { _id: new ObjectId(id), isBooked: false },
+        { $set: { isBooked: true } },
+      );
+
+      if (result.modifiedCount === 0) {
+        return res.status(400).send({ message: "Slot already booked" });
+      }
+
+      res.send({ message: "Slot booked successfully" });
+    });
+
+    // -----------------------xxxxxxxxx-----------------------
     // await client.connect();
     // console.log("✅ MongoDB connected successfully");
   } catch (error) {

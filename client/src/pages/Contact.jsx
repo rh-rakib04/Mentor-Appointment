@@ -76,18 +76,18 @@ const Contact = () => {
             </div>
 
             {/* Social Links */}
-            <div className="pt-10 border-t border-secondary/30">
+            <div className="pt-10 border-t border-primary/30">
               <h4 className="font-bold text-xs mb-5 uppercase tracking-[0.2em] text-muted">
                 Join the Community
               </h4>
               <div className="flex gap-3">
-                <button className="btn btn-square btn-outline btn-primary hover:bg-primary hover:text-white transition-all">
+                <button className="btn btn-square btn-outline btn-accent hover:bg-accent hover:text-white transition-all">
                   <FaLinkedinIn size={18} />
                 </button>
-                <button className="btn btn-square btn-outline btn-primary hover:bg-primary hover:text-white transition-all">
+                <button className="btn btn-square btn-outline btn-accent hover:bg-accent hover:text-white transition-all">
                   <FaTwitter size={18} />
                 </button>
-                <button className="btn btn-square btn-outline btn-primary hover:bg-primary hover:text-white transition-all">
+                <button className="btn btn-square btn-outline btn-accent hover:bg-accent hover:text-white transition-all">
                   <FaInstagram size={18} />
                 </button>
               </div>
@@ -96,7 +96,7 @@ const Contact = () => {
 
           {/* Right Side: Contact Form Card */}
           <div className="lg:col-span-2">
-            <div className="card bg-main shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-secondary/20 p-8 md:p-12 rounded-3xl">
+            <div className="card bg-base shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-accent/20 p-8 md:p-12 rounded-3xl">
               <form className="grid md:grid-cols-2 gap-8 text-white">
                 <div className="form-control">
                   <label className="label font-semibold text-xs uppercase text-muted tracking-wider">
@@ -106,7 +106,7 @@ const Contact = () => {
                   <input
                     type="text"
                     placeholder="John"
-                    className="input input-bordered text-white  border-none focus:ring-2 focus:ring-primary focus:outline-none"
+                    className="input input-bordered bg-accent/10 text-black  border-none focus:ring-2 focus:ring-primary focus:outline-none"
                   />
                 </div>
                 <div className="form-control">
@@ -117,7 +117,7 @@ const Contact = () => {
                   <input
                     type="text"
                     placeholder="Doe"
-                    className="input input-bordered text-white  border-none focus:ring-2 focus:ring-primary focus:outline-none"
+                    className="input input-bordered bg-accent/10 text-black  border-none focus:ring-2 focus:ring-primary focus:outline-none"
                   />
                 </div>
                 <div className="form-control md:col-span-2">
@@ -128,7 +128,7 @@ const Contact = () => {
                   <input
                     type="email"
                     placeholder="john@example.com"
-                    className="input input-bordered  border-none focus:ring-2 focus:ring-primary focus:outline-none"
+                    className="input input-bordered bg-accent/10 text-black  border-none focus:ring-2 focus:ring-primary focus:outline-none"
                   />
                 </div>
 
@@ -138,12 +138,12 @@ const Contact = () => {
                   </label>{" "}
                   <br />
                   <textarea
-                    className="textarea textarea-bordered  border-none focus:ring-2 focus:ring-primary focus:outline-none h-40"
+                    className="textarea textarea-bordered text-black bg-accent/10 border-none focus:ring-2 focus:ring-primary focus:outline-none h-40"
                     placeholder="Describe how we can help you..."
                   ></textarea>
                 </div>
                 <div className="md:col-span-2 pt-4">
-                  <button className="btn btn-primary btn-block text-white font-bold h-14 rounded-xl flex gap-2">
+                  <button className="btn bg-accent text-black btn-block border-none font-bold h-14 rounded-xl flex gap-2">
                     <Send size={18} /> Send Message
                   </button>
                 </div>
