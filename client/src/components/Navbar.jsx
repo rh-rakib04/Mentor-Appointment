@@ -141,7 +141,7 @@ const Navbar = () => {
                   className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-xl bg-main rounded-box w-52 border border-secondary/20"
                 >
                   <li className="p-2 font-bold text-primary">
-                    {user?.name || "User"}
+                    {user?.displayName || "User"}
                   </li>
                   <li>
                     <Link to="/dashboard">My Dashboard</Link>

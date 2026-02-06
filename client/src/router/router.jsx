@@ -11,6 +11,11 @@ import PrivateRoute from "./PrivateRoute";
 import MentorDetails from "../components/MentorDetails";
 import DashboardHome from "../dashboard/home/DashboardHome";
 import DashboardLayout from "../layout/DashboardLayout";
+import BookingRequest from "../dashboard/mentor/BookingRequest";
+import ManageSlots from "../dashboard/mentor/ManageSlots";
+import Payouts from "../dashboard/mentor/Payouts";
+import MyBooking from "../dashboard/student/MyBooking";
+import PaymentHistory from "../dashboard/student/PaymentHistory";
 
 export const router = createBrowserRouter([
   {
@@ -55,6 +60,18 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <DashboardHome />,
+      },
+      {
+        path: "my-bookings",
+        element: <MyBooking />,
+      },
+      { path: "payment-history", element: <PaymentHistory /> },
+      { path: "booking-requests", element: <BookingRequest /> },
+      { path: "manage-slots", element: <ManageSlots /> },
+      { path: "payouts", element: <Payouts /> },
+      {
+        path: "profile",
+        element: <div>Profile Settings</div>,
       },
     ],
   },
