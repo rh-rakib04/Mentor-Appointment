@@ -1,26 +1,32 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import useAxios from "../hooks/useAxios";
+import useAuth from "../hooks/useAuth";
 import { toast } from "react-hot-toast";
 
 const BecomeAMentor = () => {
   const { register, handleSubmit, reset } = useForm();
   const axios = useAxios();
+  const { user } = useAuth();
 
   const onSubmit = async (data) => {
     const mentorData = {
       ...data,
-      expertise: data.expertise.split(",").map((s) => s.trim()), // Convert string to array
+      expertise: data.expertise.split(",").map((s) => s.trim()),
       price: parseFloat(data.price),
       role: "mentor",
-      isApproved: false, // Must be false by default!
+      isApproved: false,
       status: "pending",
-      createdAt: new Date(),
     };
 
     try {
-      const res = await axios.post("/users", mentorData);
-      if (res.data.insertedId || res.data.modifiedCount) {
+      // Change POST to PATCH and use the email to identify the user
+      const res = await axios.patch(
+        `/users/apply-mentor/${user?.email}`,
+        mentorData,
+      );
+
+      if (res.data.modifiedCount > 0) {
         toast.success("Application submitted! Waiting for Admin approval.");
         reset();
       }
@@ -30,8 +36,8 @@ const BecomeAMentor = () => {
   };
 
   return (
-    <div className="min-h-[80vh] bg-slate-50 py-12 px-4">
-      <div className="max-w-3xl mx-auto bg-white rounded-3xl shadow-xl p-10 border border-slate-100">
+    <div className="min-h-[80vh]  py-12 px-4">
+      <div className="max-w-3xl mx-auto  rounded-3xl shadow-xl p-10 border border-slate-100">
         <div className="text-center mb-10">
           <h1 className="text-4xl font-black text-slate-900 mb-2">
             Apply as a Mentor

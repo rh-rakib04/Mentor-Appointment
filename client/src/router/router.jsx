@@ -16,6 +16,8 @@ import ManageSlots from "../dashboard/mentor/ManageSlots";
 import Payouts from "../dashboard/mentor/Payouts";
 import MyBooking from "../dashboard/student/MyBooking";
 import PaymentHistory from "../dashboard/student/PaymentHistory";
+import UserManagement from "../dashboard/admin/UserManagement";
+import MentorApproval from "../dashboard/admin/MentorApproval";
 
 export const router = createBrowserRouter([
   {
@@ -69,6 +71,8 @@ export const router = createBrowserRouter([
       { path: "booking-requests", element: <BookingRequest /> },
       { path: "manage-slots", element: <ManageSlots /> },
       { path: "payouts", element: <Payouts /> },
+      { path: "user-management", element: <UserManagement /> },
+      { path: "mentor-approvals", element: <MentorApproval /> },
       {
         path: "profile",
         element: <div>Profile Settings</div>,

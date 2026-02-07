@@ -1,28 +1,32 @@
 import React, { useState } from "react";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import useAxios from "../hooks/useAxios";
+import useAuth from "../hooks/useAuth";
 import Loading from "./Loading";
+import { toast } from "react-hot-toast";
 import {
-  GraduationCap,
   Briefcase,
-  Languages,
-  Target,
-  FileCheck,
-  Video,
-  MessageSquare,
+  Clock,
+  Star,
+  ShieldCheck,
+  Check,
+  Users,
+  MessageCircle,
+  TrendingUp,
   Award,
 } from "lucide-react";
-import useRole from "../hooks/useRole";
-import AddSlot from "./AddSlot";
 
 const MentorDetails = () => {
-  const { role } = useRole();
-  const { id, mentorId } = useParams();
+  const { id } = useParams();
+  const { user } = useAuth();
   const axios = useAxios();
+  const navigate = useNavigate();
   const [selectedSlot, setSelectedSlot] = useState(null);
+  const [isBooking, setIsBooking] = useState(false);
 
-  const { data: mentor, isLoading } = useQuery({
+  // 1. Fetch Mentor Profile
+  const { data: mentor, isLoading: mentorLoading } = useQuery({
     queryKey: ["mentorDetails", id],
     queryFn: async () => {
       const res = await axios.get(`/mentors/${id}`);
@@ -30,133 +34,216 @@ const MentorDetails = () => {
     },
   });
 
-  const slots = ["Mon, 10:00 AM", "Mon, 02:00 PM", "Tue, 09:30 AM"];
+  // 2. Fetch Live Slots for this Mentor
+  const { data: liveSlots = [], isLoading: slotsLoading } = useQuery({
+    queryKey: ["mentorSlots", id],
+    queryFn: async () => {
+      const res = await axios.get(`/slots/${id}`);
+      return res.data;
+    },
+  });
 
-  if (isLoading) return <Loading />;
+  // 3. Handle Booking & Payment Redirect
+  const handleBooking = async () => {
+    if (!user) {
+      toast.error("Please login to book a session");
+      return navigate("/login");
+    }
+
+    setIsBooking(true);
+    const bookingData = {
+      mentorId: id,
+      mentorEmail: mentor?.email,
+      mentorName: mentor?.displayName || mentor?.name,
+      studentEmail: user?.email,
+      studentName: user?.displayName,
+      slotId: selectedSlot._id,
+      slotTime: `${selectedSlot.date} at ${selectedSlot.startTime}`,
+      price: parseFloat(mentor?.price || 0),
+      status: "pending",
+      bookedAt: new Date(),
+    };
+
+    try {
+      const res = await axios.post("/bookings", bookingData);
+      if (res.data.insertedId) {
+        toast.success("Redirecting to secure payment...");
+        // This is where you would call your SSLCommerz backend route
+        window.location.replace(`http://localhost:5000/payment/init?bookingId=${res.data.insertedId}`);
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Booking failed. Try again.");
+    } finally {
+      setIsBooking(false);
+    }
+  };
+
+  if (mentorLoading || slotsLoading) return <Loading />;
 
   return (
-    <div className="bg-[#F8FAFC] min-h-screen py-10 font-ubuntu">
+    <div className="bg-[#F8FAFC] min-h-screen py-10 font-sans">
       <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* LEFT: Deep Details (8 Columns) */}
+        
+        {/* LEFT SIDE: Content */}
         <div className="lg:col-span-8 space-y-6">
-          {/* Main Info Card */}
-          <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 flex gap-6 items-center">
-            <img
-              src={mentor?.image}
-              className="w-32 h-32 rounded-full ring-4 ring-primary/10"
-              alt=""
-            />
-            <div>
-              <h1 className="text-3xl font-bold text-slate-900">
-                {mentor?.name}
-              </h1>
-              <p className="text-primary font-bold flex items-center gap-2 mt-1">
-                <Briefcase size={18} /> {mentor?.role} @ {mentor?.company}
+          
+          {/* Header Card */}
+          <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+            <div className="flex flex-col md:flex-row gap-6 items-center md:items-start text-center md:text-left">
+              <img
+                src={mentor?.photoURL || mentor?.image || "https://i.pravatar.cc/150"}
+                className="w-32 h-32 rounded-2xl object-cover ring-4 ring-primary/5 shadow-lg"
+                alt={mentor?.displayName}
+              />
+              <div className="flex-1">
+                <div className="flex items-center justify-center md:justify-start gap-2">
+                  <h1 className="text-3xl font-bold text-slate-900">
+                    {mentor?.displayName || mentor?.name || "Premium Mentor"}
+                  </h1>
+                  {mentor?.isApproved && <ShieldCheck className="text-blue-500" size={24} />}
+                </div>
+                <p className="text-primary font-semibold text-lg flex items-center justify-center md:justify-start gap-2">
+                  <Briefcase size={18} /> {mentor?.company || "Tech Industry Expert"}
+                </p>
+
+                <div className="flex flex-wrap justify-center md:justify-start gap-4 mt-4">
+                  <span className="flex items-center gap-1 text-slate-500 text-sm font-medium bg-slate-50 px-3 py-1 rounded-full border border-slate-100">
+                    <Star className="text-amber-400 fill-amber-400" size={16} />
+                    {mentor?.rating || 4.8} ({mentor?.reviewCount || 12} reviews)
+                  </span>
+                  <span className="flex items-center gap-1 text-slate-500 text-sm font-medium bg-slate-50 px-3 py-1 rounded-full border border-slate-100">
+                    <Clock size={16} /> 60 Min Session
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 pt-8 border-t border-slate-100">
+              <h3 className="text-xl font-bold text-slate-900 mb-4">Bio</h3>
+              <p className="text-slate-600 leading-relaxed whitespace-pre-line text-lg">
+                {mentor?.bio || "No biography provided yet. This mentor is currently updating their profile details."}
               </p>
-              <div className="flex gap-4 mt-4 text-sm text-slate-500 font-medium">
-                <span className="flex items-center gap-1">
-                  <Languages size={16} /> English, Bengali
-                </span>
-                <span className="flex items-center gap-1">
-                  <Target size={16} /> 5+ Yrs Exp
-                </span>
+            </div>
+
+            <div className="mt-8">
+              <h3 className="text-xl font-bold text-slate-900 mb-4">Expertise</h3>
+              <div className="flex flex-wrap gap-2">
+                {mentor?.expertise?.length > 0 ? (
+                  mentor.expertise.map((skill, i) => (
+                    <span key={i} className="px-4 py-2 bg-primary/5 text-primary font-bold rounded-xl text-sm border border-primary/10">
+                      {skill}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-slate-400 italic">No expertise listed</span>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Deliverables Section - Crucial for Student Decision */}
-          <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+          {/* Social Proof Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-6 bg-white rounded-3xl border border-slate-100 text-center shadow-sm">
+              <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <Users className="text-emerald-600" size={20} />
+              </div>
+              <p className="text-2xl font-bold text-slate-900">50+</p>
+              <p className="text-xs text-slate-500 uppercase font-bold tracking-wider">Students Helped</p>
+            </div>
+            <div className="p-6 bg-white rounded-3xl border border-slate-100 text-center shadow-sm">
+              <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <MessageCircle className="text-blue-600" size={20} />
+              </div>
+              <p className="text-2xl font-bold text-slate-900">99%</p>
+              <p className="text-xs text-slate-500 uppercase font-bold tracking-wider">Response Rate</p>
+            </div>
+            <div className="p-6 bg-white rounded-3xl border border-slate-100 text-center shadow-sm">
+              <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <TrendingUp className="text-purple-600" size={20} />
+              </div>
+              <p className="text-2xl font-bold text-slate-900">Top 5%</p>
+              <p className="text-xs text-slate-500 uppercase font-bold tracking-wider">Mentor Rank</p>
+            </div>
+          </div>
+
+          {/* Value Propositions */}
+          <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
             <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-              <Award className="text-secondary" /> What we'll achieve together
+              <Award className="text-primary" size={24} /> Session Deliverables
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
-                { icon: <Video size={20} />, text: "1-on-1 Live Video Call" },
-                { icon: <FileCheck size={20} />, text: "Personalized Roadmap" },
-                {
-                  icon: <MessageSquare size={20} />,
-                  text: "Post-session Q&A support",
-                },
-                {
-                  icon: <Award size={20} />,
-                  text: "Certificate of completion",
-                },
-              ].map((item, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100"
-                >
-                  <div className="text-primary">{item.icon}</div>
-                  <span className="text-slate-700 font-medium">
-                    {item.text}
-                  </span>
+                "1-on-1 Personalized Coaching",
+                "Code Review & Practical Feedback",
+                "Actionable Career Roadmap",
+                "Unlimited Q&A within Session",
+                "Exclusive Learning Resources",
+              ].map((item, index) => (
+                <div key={index} className="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                  <Check size={18} className="text-emerald-500" />
+                  <span className="text-slate-700 font-medium">{item}</span>
                 </div>
               ))}
             </div>
           </div>
-
-          {/* Education & Bio */}
-          <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 space-y-6">
-            <div>
-              <h3 className="text-xl font-bold mb-3">About the Mentor</h3>
-              <p className="text-slate-600 leading-relaxed text-lg">
-                {mentor?.bio}
-              </p>
-            </div>
-
-            <div className="pt-6 border-t">
-              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <GraduationCap className="text-secondary" /> Education &
-                Background
-              </h3>
-              <ul className="space-y-3">
-                <li className="flex justify-between items-center text-slate-700">
-                  <span className="font-bold">B.Sc. in Computer Science</span>
-                  <span className="text-slate-400">Dhaka University</span>
-                </li>
-              </ul>
-            </div>
-          </div>
         </div>
 
-        {/* RIGHT: Pricing & Payment (4 Columns) */}
+        {/* RIGHT SIDE: Booking Card */}
         <div className="lg:col-span-4">
-          <div className="sticky top-20 bg-white p-8 rounded-2xl border-2 border-primary/20 shadow-xl space-y-6">
+          <div className="sticky top-24 bg-white p-8 rounded-3xl border border-slate-200 shadow-2xl space-y-6">
             <div>
-              <p className="text-slate-400 font-bold uppercase text-xs tracking-widest mb-1">
-                Price per session
-              </p>
+              <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest mb-1">Total Investment</p>
               <h2 className="text-5xl font-black text-slate-900">
-                ${mentor?.price}
+                ${mentor?.price || 0}<span className="text-lg text-slate-400 font-normal">/hr</span>
               </h2>
             </div>
-            {role === "mentor" && <AddSlot mentorId={mentorId}></AddSlot>}
-            <div className="space-y-3">
-              <p className="font-bold text-slate-800">Pick a starting time:</p>
-              {slots.map((slot) => (
-                <button
-                  key={slot}
-                  onClick={() => setSelectedSlot(slot)}
-                  className={`w-full p-4 rounded-xl border-2 font-bold text-left transition-all ${
-                    selectedSlot === slot
-                      ? "bg-primary text-white border-primary"
-                      : "border-slate-100 bg-slate-50 text-slate-600"
-                  }`}
-                >
-                  {slot}
-                </button>
-              ))}
+
+            <div className="space-y-4">
+              <p className="font-bold text-slate-800 flex items-center gap-2">
+                <Clock size={18} className="text-primary" /> Pick a Time Slot
+              </p>
+
+              <div className="max-h-72 overflow-y-auto space-y-2 pr-2 scrollbar-hide">
+                {liveSlots.length > 0 ? (
+                  liveSlots.map((slot) => (
+                    <button
+                      key={slot._id}
+                      onClick={() => setSelectedSlot(slot)}
+                      className={`w-full p-4 rounded-2xl border-2 font-bold text-left transition-all duration-300 ${
+                        selectedSlot?._id === slot._id
+                          ? "bg-slate-900 text-white border-slate-900 shadow-lg scale-[1.02]"
+                          : "border-slate-100 bg-slate-50 text-slate-600 hover:border-primary/40"
+                      }`}
+                    >
+                      <div className="text-sm">{slot.date}</div>
+                      <div className="text-xs opacity-70 font-medium">{slot.startTime} - {slot.endTime}</div>
+                    </button>
+                  ))
+                ) : (
+                  <div className="py-12 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                    <p className="text-slate-400 text-sm italic">No slots available currently</p>
+                  </div>
+                )}
+              </div>
             </div>
 
             <button
-              disabled={!selectedSlot}
-              className="w-full h-16 bg-slate-900 text-white rounded-xl font-bold text-lg hover:scale-[1.02] active:scale-95 transition-all disabled:bg-slate-200"
+              onClick={handleBooking}
+              disabled={!selectedSlot || isBooking}
+              className={`w-full h-16 rounded-2xl font-bold text-lg transition-all shadow-xl active:scale-95 flex items-center justify-center gap-2 ${
+                !selectedSlot || isBooking
+                  ? "bg-slate-100 text-slate-400 cursor-not-allowed"
+                  : "bg-primary text-white hover:bg-primary/90 shadow-primary/20"
+              }`}
             >
-              Confirm & Pay Now
+              {isBooking ? <span className="loading loading-spinner"></span> : "Confirm & Book Now"}
             </button>
-            <p className="text-center text-[10px] text-slate-400 font-bold uppercase">
-              Safe & Secure Payment via SSLCommerz
-            </p>
+            
+            <div className="pt-4 border-t border-slate-100">
+              <p className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-tighter">
+                🔒 Secure SSL Encryption • Instant Confirmation
+              </p>
+            </div>
           </div>
         </div>
       </div>

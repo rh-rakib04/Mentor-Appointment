@@ -72,7 +72,10 @@ const DashboardLayout = () => {
             {/* mentor */}
             {role === "mentor" && (
               <>
-                <NavLink to="/dashboard/booking-requests" className={linkClasses}>
+                <NavLink
+                  to="/dashboard/booking-requests"
+                  className={linkClasses}
+                >
                   <Calendar size={20} /> Booking Request
                 </NavLink>
                 <NavLink to="/dashboard/manage-slots" className={linkClasses}>
@@ -93,7 +96,7 @@ const DashboardLayout = () => {
                   <Calendar size={20} /> User Management
                 </NavLink>
                 <NavLink
-                  to="/dashboard/user-management"
+                  to="/dashboard/mentor-approvals"
                   className={linkClasses}
                 >
                   <Calendar size={20} /> Mentor Approvals

@@ -74,18 +74,60 @@ async function connectDB() {
         res.status(500).send({ message: "Failed to fetch user role" });
       }
     });
+    // Get pending mentors for admin
+    app.get("/users/pending-mentors", async (req, res) => {
+      const result = await usersCollection
+        .find({
+          role: "mentor",
+          isApproved: false,
+        })
+        .toArray();
+      res.send(result);
+    });
+    // Route for an existing user to apply as a mentor
+    app.patch("/users/apply-mentor/:email", async (req, res) => {
+      const email = req.params.email;
+      const applicationData = req.body;
+
+      const filter = { email: email };
+      const updateDoc = {
+        $set: {
+          name: applicationData.name,
+          company: applicationData.company,
+          expertise: applicationData.expertise,
+          price: applicationData.price,
+          image: applicationData.image,
+          bio: applicationData.bio,
+          role: "mentor", // Change role to mentor
+          isApproved: false, // Reset approval status
+          status: "pending",
+        },
+      };
+
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+    // Approve a mentor
+    app.patch("/users/approve/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: { isApproved: true },
+      };
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
 
     // ---------> Mentors APIs
     app.get("/mentors", async (req, res) => {
-      const result = await mentorsCollection.find().toArray();
+      const query = { role: "mentor", isApproved: true };
+      const result = await usersCollection.find(query).toArray();
       res.send(result);
     });
     app.get("/mentors/:id", async (req, res) => {
       const id = req.params.id;
-      const mentor = await mentorsCollection.findOne({
-        _id: new ObjectId(id),
-      });
-      res.send(mentor);
+      const result = await usersCollection.findOne({ _id: new ObjectId(id) });
+      res.send(result);
     });
     // ---------> Slots APIs
     app.post("/slots", async (req, res) => {
